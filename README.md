@@ -1,37 +1,22 @@
-## Workflows for building OpenWrt firmware
+构建OpenWrt固件的工作流程
+该存储库基于 P3TERX/Actions-OpenWrt 进行了改进。
 
-This repository is improved based on **[P3TERX/Actions-OpenWrt](https://github.com/P3TERX/Actions-OpenWrt)**. Since the original repository has been archived and cannot submit PR, it is provided as a new repository.
+本项目修复了原项目中 GitHub 权限系统升级导致的一些功能故障，并改进了源码更新自动编译的功能。此存储库中的工作流不需要其他令牌。
 
-- - -
+2023/2/16：全面重构，解决了很多老问题，提高了安全性和可靠性。
 
-This project fixes some functional failures caused by the upgrade of GitHub permission system in the original project, and improves the function of automatic compilation of source code update. Workflows in this repository does not need additional tokens.
+2023/3/10：删除加载功能，因为在编译非默认分支或哈希的源代码时容易无意中引起问题。 具体而言，依赖于特定分支或哈希的源代码的源还需要指定分支或哈希。此时，如果我们仍然使用文件覆盖来引入自定义提要，我们必须小心原始基本提要的分支或哈希信息被覆盖并丢失。 因此，另一种方法是使用 修改 .请查看评论以了解详细信息。feeds.conf.defaultCUSTOM_SCRIPT_1feeds.conf.defaultexample-custom-script-1.sh
 
-**2023/2/16:** Fully refactored, solve a lot of old problems, improve safety and reliability.
+用法：
+从此存储库生成工作流存储库，并从 生成工作流文件。您可以将 的副本重命名为所需的任何名称，但请记住，文件扩展名必须是 或 。template.yamltemplate.yaml.yaml.yml
 
-**2023/3/10:** Delete the feature of loading `feeds.conf.default`, because it is easy to inadvertently cause problems when compiling source code of non-default branch or hash. 
-               Specifically, feeds that depend on the source code of a particular branch or hash also need to specify a branch or hash. At this point, if we still use file overwriting to introduce custom feeds, we must be careful that the branch or hash information of the original base feed is overwritten and lost. 
-               Therefore, the alternative is to use `CUSTOM_SCRIPT_1` to modify the `feeds.conf.default`. Please check the comments in `example-custom-script-1.sh` for details.
+在工作流文件中，根据批注修改内容。
 
-- - -
+然后，您可以手动或定期启动工作流。
 
-### Usage:
-
-1. Generate your workflow repo from this repository, and generate workflow file from `template.yaml`. You can rename the copy of `template.yaml` to any name you want, but remember that the file extension must be `.yaml` or `.yml`. 
-
-2. In your workflow file, modify the content according to the annotations.  
-3. Then you can startup the workflow manually or regularly. 
-   + Select the workflow name on the Actions page to run it manually.
-   + For run regularly, you need to uncomment:
-     ```
-     schedule:
-       - cron: 0 */18 * * *
-     ```
-     There you can use your own cron expression to start the workflow as needed.
-
-Each time this workflow runs, it will check whether the specified repository is updated. If the source code is updated, it will start compiling the new firmware.  
-Whether the workflow is started manually or regularly, the compilation will only be triggered when the source code is updated. However, during manual startup, you can force firmware compilation by entering `true` in `Build new firmware anyway`.
-
-- - -
-
-### Copyright:
-MIT Licence © 2022~2023 Curious <https://curious.host>  
+在“操作”页面上选择工作流名称以手动运行它。
+对于定期运行，您需要取消注释：在那里，您可以使用自己的 cron 表达式根据需要启动工作流。
+schedule:
+  - cron: 0 */18 * * *
+每次运行此工作流时，它都会检查指定的存储库是否已更新。如果源代码更新，它将开始编译新固件。
+无论工作流是手动启动还是定期启动，编译只会在源代码更新时触发。但是，在手动启动期间，您可以通过输入 来强制固件编译。trueBuild new firmware anyway
